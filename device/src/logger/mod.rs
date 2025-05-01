@@ -1,5 +1,4 @@
-#[allow(unused_imports)]
-pub use tracing::{Level, event, instrument, span};
+pub mod logger_msg;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
@@ -11,7 +10,7 @@ pub fn init_logger(logfile_name: &str) {
         .max_log_files(10)
         .build("log")
         .expect("failed to initialize rolling file appender");
-    let stdout = std::io::stdout.with_max_level(Level::INFO);
+    let stdout = std::io::stdout.with_max_level(logger_msg::Level::INFO);
 
     tracing_subscriber::fmt()
         .with_writer(stdout.and(logfile))
