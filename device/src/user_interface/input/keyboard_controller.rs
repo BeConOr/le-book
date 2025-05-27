@@ -21,7 +21,7 @@ impl KeyboardController {
         let epfd = Epoll::new().context("Failed to create epoll for KeyboardController")?;
 
         let fd = device.as_raw_fd();
-        epfd.register(fd)
+        epfd.register(fd, None)
             .context("Failed to register device with epoll")?;
 
         Ok(Self {
@@ -43,8 +43,9 @@ impl InputController for KeyboardController {
 
 impl InterruptCapable for KeyboardController {
     #[instrument(skip(self, cb))]
-    fn register_callback(&mut self, id: u32, cb: CallBack) {
+    fn register_callback(&mut self, id: u32, cb: CallBack) -> Result<()> {
         self.callbacks.insert(id, cb);
+        Ok(())
     }
 
     fn run(&mut self) {

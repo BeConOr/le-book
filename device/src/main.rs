@@ -33,10 +33,13 @@ fn main() {
 
     let keyboard_controller = Rc::new(RefCell::new(keyboard_controller));
 
-    let space_key = Key::new(16, keyboard_controller.clone());
-    space_key.on_change(|ev| {
-        event!(Level::INFO, "Space key event: {:?}", ev);
-    });
+    let q_key = Key::new(16, keyboard_controller.clone());
+    if let Err(e) = q_key.on_change(|ev| {
+        event!(Level::INFO, "Q key event: {:?}", ev);
+    }) {
+        event!(Level::ERROR, error = ?e, "Failed to register a callback");
+        panic!("Cannot register a callback");
+    }
 
     keyboard_controller.borrow_mut().run();
 }

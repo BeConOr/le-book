@@ -1,31 +1,27 @@
-use super::input_controller::{InputEvent, InterruptCapable};
-use anyhow::{Context, Result};
+use input_controller::{InputEvent, InterruptCapable};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct Key {
+pub struct Pin {
     id: u32,
     controller: Rc<RefCell<dyn InterruptCapable>>,
 }
 
-impl Key {
+impl Pin {
     pub fn new(id: u32, controller: Rc<RefCell<dyn InterruptCapable>>) -> Self {
         Self { id, controller }
     }
 
-    #[allow(dead_code)]
-    pub fn on_change<F>(&self, cb: F) -> Result<()>
+    pub fn on_change<F>(&self, cb: F)
     where
         F: Fn(InputEvent) + Send + 'static,
     {
         self.controller
             .borrow_mut()
-            .register_callback(self.id, Box::new(cb))
-            .context("Cannot register a key's callback")
+            .register_callback(self.id, Box::new(cb));
     }
 
-    #[allow(dead_code)]
-    pub fn is_pressed(&self) -> bool {
+    pub fn is_high(&self) -> bool {
         self.controller.borrow().read_line(self.id)
     }
 }

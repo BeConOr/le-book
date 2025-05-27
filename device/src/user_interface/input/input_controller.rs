@@ -21,8 +21,8 @@ impl Epoll {
         })
     }
 
-    pub fn register(&self, fd: RawFd) -> Result<()> {
-        let mut ev = epoll::EpollEvent::new(epoll::EpollFlags::EPOLLIN, fd as u64);
+    pub fn register(&self, fd: RawFd, data: Option<u64>) -> Result<()> {
+        let mut ev = epoll::EpollEvent::new(epoll::EpollFlags::EPOLLIN, data.unwrap_or(fd as u64));
         epoll::epoll_ctl(self.fd, epoll::EpollOp::EpollCtlAdd, fd, &mut ev)
             .context("epoll_ctl failed")?;
         Ok(())
@@ -54,6 +54,6 @@ pub trait InputController {
 }
 
 pub trait InterruptCapable: InputController {
-    fn register_callback(&mut self, id: u32, cb: CallBack);
+    fn register_callback(&mut self, id: u32, cb: CallBack) -> Result<()>;
     fn run(&mut self);
 }

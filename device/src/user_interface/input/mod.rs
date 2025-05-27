@@ -1,3 +1,4 @@
+pub mod gpio_controller;
 pub mod key;
 pub mod keyboard_controller;
 
