@@ -44,6 +44,17 @@ impl Layout for VBoxLayout {
 }
 
 impl VBoxLayout {
+    fn new(x: u16, y: u16) -> Self {
+        Self {
+            x,
+            y,
+            spacing: 0,
+            children: Vec::new(),
+            current_y: 0,
+            width: 0,
+        }
+    }
+
     pub fn set_spacing(&mut self, spacing: u16) {
         self.spacing = spacing;
         self.reflow();
