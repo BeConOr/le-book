@@ -15,7 +15,7 @@ use crossterm::{
 type Pos = (u16, u16);
 
 #[derive(Default)]
-pub struct Frame {
+struct Frame {
     cells: HashMap<Pos, String>,
 }
 
