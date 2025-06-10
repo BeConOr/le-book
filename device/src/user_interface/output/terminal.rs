@@ -18,16 +18,18 @@ pub const BORDER_SIZE: u16 = 1;
 
 #[derive(Default)]
 struct Frame {
-    cells: HashMap<Pos, String>,
+    cells: HashMap<Pos, char>,
 }
 
 impl Frame {
     pub fn set(&mut self, x: u16, y: u16, text: &str) {
-        self.cells.insert((x, y), text.to_string());
+        for (i, ch) in text.chars().enumerate() {
+            self.cells.insert((x + i as u16, y), ch);
+        }
     }
 
-    pub fn get(&self, x: u16, y: u16) -> Option<&String> {
-        self.cells.get(&(x, y))
+    pub fn get(&self, x: u16, y: u16) -> Option<char> {
+        self.cells.get(&(x, y)).copied()
     }
 
     pub fn clear(&mut self) {
@@ -75,18 +77,17 @@ impl OutputRenderer for Renderer {
     fn flush(&mut self) -> Result<()> {
         let mut stdout = stdout();
 
-        for ((x, y), text) in &self.current_frame.cells {
+        for ((x, y), ch) in &self.current_frame.cells {
             match self.previous_frame.get(*x, *y) {
-                Some(prev) if prev == text => continue,
+                Some(prev) if *ch == prev => continue,
                 _ => {
-                    queue!(stdout, MoveTo(*x, *y), Print(text)).with_context(|| {
-                        format!("Failed to print text \"{text}\" on a position ({x}, {y})")
-                    })?;
+                    queue!(stdout, MoveTo(*x, *y), Print(ch))
+                        .with_context(|| format!("Failed to print char '{ch}' at ({x}, {y})"))?;
                 }
             }
         }
 
-        stdout.flush().context("Cannot flash buffer")?;
+        stdout.flush().context("Cannot flush buffer")?;
         self.previous_frame = std::mem::take(&mut self.current_frame);
         Ok(())
     }
