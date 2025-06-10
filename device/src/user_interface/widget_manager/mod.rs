@@ -1,3 +1,8 @@
 pub mod layout;
-pub mod vbox_layout;
 pub mod widget;
+
+mod label;
+mod vbox_layout;
+
+pub use label::Label;
+pub use vbox_layout::VBoxLayout;
