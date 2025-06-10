@@ -3,6 +3,8 @@ use super::terminal::Renderer;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 
+pub use super::terminal::BORDER_SIZE;
+
 static RENDERER: Lazy<Mutex<Renderer>> = Lazy::new(|| Mutex::new(Renderer::new()));
 
 fn with_renderer<F, R>(f: F) -> R
@@ -27,4 +29,8 @@ pub fn flush() {
 
 pub fn clear() {
     with_renderer(|r| r.clear().unwrap());
+}
+
+pub fn clear_box(x: u16, y: u16, width: u16, height: u16) {
+    with_renderer(|r| r.clear_box(x, y, width, height).unwrap());
 }

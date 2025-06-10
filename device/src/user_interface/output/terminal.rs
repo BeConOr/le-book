@@ -14,6 +14,8 @@ use crossterm::{
 
 type Pos = (u16, u16);
 
+pub const BORDER_SIZE: u16 = 1;
+
 #[derive(Default)]
 struct Frame {
     cells: HashMap<Pos, String>,
@@ -93,6 +95,14 @@ impl OutputRenderer for Renderer {
         execute!(stdout(), Clear(ClearType::All)).context("Cannot clear the screen")?;
         self.current_frame.clear();
         self.previous_frame.clear();
+        Ok(())
+    }
+
+    fn clear_box(&mut self, x: u16, y: u16, width: u16, height: u16) -> Result<()> {
+        for dy in 0..height {
+            let blank = " ".repeat(width as usize);
+            self.current_frame.set(x, y + dy, &blank);
+        }
         Ok(())
     }
 }
