@@ -5,14 +5,14 @@ use delegate;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct VBoxLayout {
+pub struct HBoxLayout {
     layout: GBoxLayout,
 }
 
-impl VBoxLayout {
+impl HBoxLayout {
     pub fn new(x: u16, y: u16) -> Self {
         Self {
-            layout: GBoxLayout::new(x, y, Direction::Vertical),
+            layout: GBoxLayout::new(x, y, Direction::Horizontal),
         }
     }
 
@@ -21,7 +21,7 @@ impl VBoxLayout {
     }
 }
 
-impl widget::Widget for VBoxLayout {
+impl widget::Widget for HBoxLayout {
     delegate::delegate! {
         to self.layout {
             fn raw_render(&mut self);
@@ -34,7 +34,7 @@ impl widget::Widget for VBoxLayout {
     }
 }
 
-impl Layout for VBoxLayout {
+impl Layout for HBoxLayout {
     fn add_widget(&mut self, widget: Rc<RefCell<dyn widget::Widget>>) {
         self.layout.add_widget(widget);
     }
