@@ -47,7 +47,7 @@ impl Layout for VBoxLayout {
 }
 
 impl VBoxLayout {
-    fn new(x: u16, y: u16) -> Self {
+    pub fn new(x: u16, y: u16) -> Self {
         let cur_box = widget::Box::<u16> {
             x,
             y,
