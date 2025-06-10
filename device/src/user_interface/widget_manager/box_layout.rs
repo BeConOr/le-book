@@ -1,7 +1,12 @@
+use super::layout::{Layout, widget};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use super::layout::{Layout, widget};
+#[derive(Copy, Clone)]
+pub enum Direction {
+    Vertical,
+    Horizontal,
+}
 
 pub struct GBoxLayout {
     cur_box: widget::Box<u16>,
@@ -42,8 +47,8 @@ impl widget::Widget for GBoxLayout {
 
 impl Layout for GBoxLayout {
     fn add_widget(&mut self, widget: Rc<RefCell<dyn widget::Widget>>) {
+        self.set_widget_position(&widget);
         self.children.push(widget);
-        self.reflow();
     }
 }
 
@@ -55,12 +60,9 @@ impl GBoxLayout {
             width: 0,
             height: 0,
         };
-
-        let prev_box = cur_box;
-
         Self {
             cur_box,
-            prev_box,
+            prev_box: cur_box,
             spacing: 0,
             direction,
             children: Vec::new(),
@@ -73,46 +75,27 @@ impl GBoxLayout {
     }
 
     pub fn reflow(&mut self) {
-        let mut offset_x = self.cur_box.x;
-        let mut offset_y = self.cur_box.y;
-
-        let mut total_width = 0;
-        let mut total_height = 0;
-        let mut max_cross = 0;
-
-        for child in &self.children {
-            let mut w = child.borrow_mut();
-            match self.direction {
-                Direction::Vertical => {
-                    w.set_position(self.cur_box.x, offset_y);
-                    offset_y += w.height() + self.spacing;
-                    total_height += w.height() + self.spacing;
-                    max_cross = max_cross.max(w.width());
-                }
-                Direction::Horizontal => {
-                    w.set_position(offset_x, self.cur_box.y);
-                    offset_x += w.width() + self.spacing;
-                    total_width += w.width() + self.spacing;
-                    max_cross = max_cross.max(w.height());
-                }
-            }
+        let children = self.children.clone();
+        self.cur_box.width = 0;
+        self.cur_box.height = 0;
+        for child in &children {
+            self.set_widget_position(child);
         }
+    }
 
+    fn set_widget_position(&mut self, widget: &Rc<RefCell<dyn widget::Widget>>) {
+        let mut w = widget.borrow_mut();
         match self.direction {
             Direction::Vertical => {
-                self.cur_box.height = total_height.saturating_sub(self.spacing);
-                self.cur_box.width = max_cross;
+                w.set_position(self.cur_box.x, self.cur_box.y + self.cur_box.height);
+                self.cur_box.height += self.spacing + w.height();
+                self.cur_box.width = self.cur_box.width.max(w.width());
             }
             Direction::Horizontal => {
-                self.cur_box.width = total_width.saturating_sub(self.spacing);
-                self.cur_box.height = max_cross;
+                w.set_position(self.cur_box.x + self.cur_box.width, self.cur_box.y);
+                self.cur_box.width += self.spacing + w.width();
+                self.cur_box.height = self.cur_box.height.max(w.height());
             }
         }
     }
-}
-
-#[derive(Copy, Clone)]
-pub enum Direction {
-    Horizontal,
-    Vertical,
 }
