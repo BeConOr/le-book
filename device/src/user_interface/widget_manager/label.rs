@@ -2,6 +2,9 @@ pub use super::layout::widget;
 
 use crate::user_interface::output::draw;
 
+const BORDER_PADDING: u16 = 2 * draw::BORDER_SIZE;
+const LABEL_HEIGHT: u16 = 1 + BORDER_PADDING;
+
 pub struct Label {
     text: String,
     cur_box: widget::Box<u16>,
@@ -10,8 +13,8 @@ pub struct Label {
 
 impl Label {
     pub fn new(text: &str) -> Self {
-        let width = text.len() as u16 + 2 * draw::BORDER_SIZE;
-        let height = 1 + 2 * draw::BORDER_SIZE;
+        let width = Label::get_label_length(text);
+        let height = LABEL_HEIGHT;
         let cur_box = widget::Box::<u16> {
             x: 0,
             y: 0,
@@ -28,16 +31,12 @@ impl Label {
     }
 
     pub fn set_text(&mut self, text: &str) {
-        let old_width = self.text.len().max(text.len()) as u16;
-        draw::clear_box(
-            self.cur_box.x + draw::BORDER_SIZE,
-            self.cur_box.y + draw::BORDER_SIZE,
-            old_width,
-            1,
-        );
         self.text = text.to_string();
-        self.cur_box.width = text.len() as u16 + 2 * draw::BORDER_SIZE;
-        self.cur_box.height = 1 + 2 * draw::BORDER_SIZE;
+        self.cur_box.width = Label::get_label_length(text);
+    }
+
+    fn get_label_length(text: &str) -> u16 {
+        text.len() as u16 + BORDER_PADDING
     }
 }
 
@@ -63,10 +62,8 @@ impl widget::Widget for Label {
         self.cur_box.y = y;
     }
 
-    fn set_size(&mut self, width: u16, height: u16) {
-        self.cur_box.width = width;
-        self.cur_box.height = height;
-    }
+    #[allow(unused)]
+    fn set_size(&mut self, width: u16, height: u16) {}
 
     fn width(&self) -> u16 {
         self.cur_box.width
