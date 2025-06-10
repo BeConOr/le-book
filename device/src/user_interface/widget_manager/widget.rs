@@ -4,6 +4,7 @@ pub trait Widget {
     fn render(&mut self) {
         self.clear();
         self.raw_render();
+        draw::flush();
     }
 
     fn clear(&mut self) {

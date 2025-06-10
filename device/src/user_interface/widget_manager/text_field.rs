@@ -90,7 +90,6 @@ impl widget::Widget for TextField {
             self.cur_box.width,
             self.cur_box.height,
         );
-        draw::flush();
     }
 
     fn set_position(&mut self, x: u16, y: u16) {
