@@ -97,17 +97,16 @@ pub fn slot(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let tuple_pattern = quote! { (#(#arg_idents),*) };
     let call_args = quote! { #(#arg_idents.clone()),* };
 
-    let wrapper_name = syn::Ident::new(&format!("{}_slot", fn_name), fn_name.span());
+    let wrapper_name = syn::Ident::new(&format!("{}", fn_name), fn_name.span());
 
     let expanded = quote! {
         #vis fn #fn_name(#(#inputs_vec),*) #fn_block
 
-        #vis fn #wrapper_name() -> SlotRef<#tuple_type> {
+        #vis let #wrapper_name: SlotRef<#tuple_type> =
             ::std::rc::Rc::new(::std::cell::RefCell::new(move |args: &#tuple_type| {
                 let #tuple_pattern = args;
                 #fn_name(#call_args);
-            }))
-        }
+            }));
     };
 
     expanded.into()

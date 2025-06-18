@@ -29,9 +29,6 @@ fn test_slot_mock_called_two_arg() {
     #[signal(i32, bool)]
     struct DoubleClickSignal;
 
-    #[slot]
-    fn my_slot(x: i32, flag: bool) {}
-
     let mut mock = MockSlot::<(i32, bool)>::new();
 
     mock.expect_call()
@@ -44,5 +41,22 @@ fn test_slot_mock_called_two_arg() {
     let mut signal = DoubleClickSignal::new();
 
     let _id = signal.connect(slot.clone());
+    signal.emit(42, true);
+}
+
+#[test]
+#[should_panic(expected = "Can't do")]
+fn test_creates_with_macros() {
+    #[signal(i32, bool)]
+    struct DoubleClickSignal;
+
+    #[slot]
+    fn my_slot(x: i32, flag: bool) {
+        panic!("Can't do");
+    }
+
+    let mut signal = DoubleClickSignal::new();
+
+    let _id = signal.connect(my_slot.clone());
     signal.emit(42, true);
 }
