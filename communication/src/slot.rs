@@ -17,9 +17,9 @@ where
 }
 
 #[macro_export]
-macro_rules! slot {
+macro_rules! define_slot {
     ($name:ident, $args:ty, $body:block) => {
-        let $name: $crate::SlotRef<$args> =
+        let $name: SlotRef<$args> =
             std::rc::Rc::new(std::cell::RefCell::new(move |args: &$args| $body));
     };
 }

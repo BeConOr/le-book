@@ -2,12 +2,12 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, FnArg, ItemFn, ItemStruct, Pat, PatIdent, PatType, Path};
+use syn::{FnArg, ItemFn, ItemStruct, Pat, PatIdent, PatType, Path, parse_macro_input};
 
 #[proc_macro_attribute]
 pub fn signal(attr: TokenStream, item: TokenStream) -> TokenStream {
     use quote::quote;
-    use syn::{parse_macro_input, punctuated::Punctuated, token::Comma, ItemStruct, Path};
+    use syn::{ItemStruct, Path, parse_macro_input, punctuated::Punctuated, token::Comma};
 
     let parsed_args = parse_macro_input!(attr with Punctuated::<Path, Comma>::parse_terminated);
     let args: Vec<_> = parsed_args.into_iter().collect();
