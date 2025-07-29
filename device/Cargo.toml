@@ -12,3 +12,9 @@ nix = "0.26.0"
 evdev = "0.13.1"
 anyhow = "1.0.98"
 gpio-cdev = "0.6.0"
+crossterm = "0.29.0"
+once_cell = "1.18.0"
+delegate = "0.13.3"
+embedded-graphics = "0.8.1"
+
+communication = { path = "../communication" }
